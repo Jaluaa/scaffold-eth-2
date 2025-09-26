@@ -1,0 +1,275 @@
+"""
+ClapCoin Subgraph Schema
+Tracks all tipping activity and creator analytics
+"""
+
+type Creator @entity {
+  "Creator wallet address"
+  id: ID!
+
+  "ENS name if available"
+  ensName: String
+
+  "Display name"
+  displayName: String
+
+  "Total tips received in ETH (wei)"
+  totalTipsEth: BigInt!
+
+  "Total tips received in USDC (6 decimals)"
+  totalTipsUsdc: BigInt!
+
+  "Total number of tips received"
+  tipCount: Int!
+
+  "Number of unique tippers"
+  uniqueTippers: Int!
+
+  "All tips received"
+  tipsReceived: [Tip!]! @derivedFrom(field: "creator")
+
+  "All withdrawals made"
+  withdrawals: [Withdrawal!]! @derivedFrom(field: "creator")
+
+  "First tip received timestamp"
+  firstTipAt: BigInt
+
+  "Last tip received timestamp"
+  lastTipAt: BigInt
+
+  "Creator balance in ETH (wei)"
+  balanceEth: BigInt!
+
+  "Creator balance in USDC (6 decimals)"
+  balanceUsdc: BigInt!
+
+  "Total withdrawn in ETH (wei)"
+  withdrawnEth: BigInt!
+
+  "Total withdrawn in USDC (6 decimals)"
+  withdrawnUsdc: BigInt!
+}
+
+type Tipper @entity {
+  "Tipper wallet address"
+  id: ID!
+
+  "Total amount tipped in ETH (wei)"
+  totalTippedEth: BigInt!
+
+  "Total amount tipped in USDC (6 decimals)"
+  totalTippedUsdc: BigInt!
+
+  "Total number of tips sent"
+  tipCount: Int!
+
+  "Number of unique creators tipped"
+  uniqueCreators: Int!
+
+  "All tips sent"
+  tipsSent: [Tip!]! @derivedFrom(field: "tipper")
+
+  "First tip sent timestamp"
+  firstTipAt: BigInt
+
+  "Last tip sent timestamp"
+  lastTipAt: BigInt
+}
+
+type Tip @entity {
+  "Transaction hash + log index"
+  id: ID!
+
+  "Transaction hash"
+  transactionHash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Block timestamp"
+  timestamp: BigInt!
+
+  "Log index in transaction"
+  logIndex: BigInt!
+
+  "Tipper address"
+  tipper: Tipper!
+
+  "Creator receiving the tip"
+  creator: Creator!
+
+  "Token used for tip (ETH = 0x0, USDC = token address)"
+  token: Bytes!
+
+  "Token symbol (ETH or USDC)"
+  tokenSymbol: String!
+
+  "Amount tipped (in token's native decimals)"
+  amount: BigInt!
+
+  "Platform fee taken (in token's native decimals)"
+  fee: BigInt!
+
+  "Net amount received by creator"
+  netAmount: BigInt!
+
+  "Tip message"
+  message: String!
+
+  "USD value at time of tip (6 decimals)"
+  usdValue: BigInt
+
+  "ETH price at time of tip (8 decimals)"
+  ethPrice: BigInt
+
+  "USDC price at time of tip (8 decimals)"
+  usdcPrice: BigInt
+}
+
+type Withdrawal @entity {
+  "Transaction hash + log index"
+  id: ID!
+
+  "Transaction hash"
+  transactionHash: Bytes!
+
+  "Block number"
+  blockNumber: BigInt!
+
+  "Block timestamp"
+  timestamp: BigInt!
+
+  "Log index in transaction"
+  logIndex: BigInt!
+
+  "Creator making the withdrawal"
+  creator: Creator!
+
+  "Token withdrawn (ETH = 0x0, USDC = token address)"
+  token: Bytes!
+
+  "Token symbol (ETH or USDC)"
+  tokenSymbol: String!
+
+  "Amount withdrawn (in token's native decimals)"
+  amount: BigInt!
+
+  "USD value at time of withdrawal (6 decimals)"
+  usdValue: BigInt
+}
+
+type DailyStats @entity {
+  "Date in YYYY-MM-DD format"
+  id: ID!
+
+  "Date timestamp (start of day)"
+  date: BigInt!
+
+  "Total tips in ETH for this day (wei)"
+  totalTipsEth: BigInt!
+
+  "Total tips in USDC for this day (6 decimals)"
+  totalTipsUsdc: BigInt!
+
+  "Total tips count for this day"
+  tipCount: Int!
+
+  "Unique tippers for this day"
+  uniqueTippers: Int!
+
+  "Unique creators for this day"
+  uniqueCreators: Int!
+
+  "Total USD volume for this day (6 decimals)"
+  totalUsdVolume: BigInt!
+
+  "Average tip size in USD (6 decimals)"
+  avgTipUsd: BigInt!
+}
+
+type MonthlyStats @entity {
+  "Month in YYYY-MM format"
+  id: ID!
+
+  "Month timestamp (start of month)"
+  month: BigInt!
+
+  "Total tips in ETH for this month (wei)"
+  totalTipsEth: BigInt!
+
+  "Total tips in USDC for this month (6 decimals)"
+  totalTipsUsdc: BigInt!
+
+  "Total tips count for this month"
+  tipCount: Int!
+
+  "Unique tippers for this month"
+  uniqueTippers: Int!
+
+  "Unique creators for this month"
+  uniqueCreators: Int!
+
+  "Total USD volume for this month (6 decimals)"
+  totalUsdVolume: BigInt!
+
+  "Average tip size in USD (6 decimals)"
+  avgTipUsd: BigInt!
+}
+
+type PlatformStats @entity {
+  "Always 'platform'"
+  id: ID!
+
+  "Total tips in ETH all time (wei)"
+  totalTipsEth: BigInt!
+
+  "Total tips in USDC all time (6 decimals)"
+  totalTipsUsdc: BigInt!
+
+  "Total tips count all time"
+  totalTipCount: Int!
+
+  "Total unique tippers"
+  totalTippers: Int!
+
+  "Total unique creators"
+  totalCreators: Int!
+
+  "Total fees collected in ETH (wei)"
+  totalFeesEth: BigInt!
+
+  "Total fees collected in USDC (6 decimals)"
+  totalFeesUsdc: BigInt!
+
+  "Total USD volume all time (6 decimals)"
+  totalUsdVolume: BigInt!
+
+  "Last updated timestamp"
+  lastUpdated: BigInt!
+}
+
+type TokenStats @entity {
+  "Token address (ETH = 0x0)"
+  id: ID!
+
+  "Token symbol"
+  symbol: String!
+
+  "Total tips in this token (native decimals)"
+  totalTips: BigInt!
+
+  "Total tips count in this token"
+  tipCount: Int!
+
+  "Total fees collected in this token (native decimals)"
+  totalFees: BigInt!
+
+  "Total withdrawals in this token (native decimals)"
+  totalWithdrawals: BigInt!
+
+  "Last price in USD (8 decimals)"
+  lastPriceUsd: BigInt!
+
+  "Last updated timestamp"
+  lastUpdated: BigInt!
+}

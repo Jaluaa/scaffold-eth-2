@@ -126,6 +126,17 @@ const config: HardhatUserConfig = {
       url: "https://forno.celo-sepolia.celo-testnet.org/",
       accounts: [deployerPrivateKey],
     },
+    // Hackathon Testnets
+    flowEVMTestnet: {
+      url: "https://testnet.evm.nodes.onflow.org",
+      accounts: [deployerPrivateKey],
+      chainId: 545,
+    },
+    citreaTestnet: {
+      url: "https://rpc.testnet.citrea.xyz",
+      accounts: [deployerPrivateKey],
+      chainId: 5115,
+    },
   },
   // Configuration for harhdat-verify plugin
   etherscan: {
